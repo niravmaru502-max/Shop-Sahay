@@ -36,11 +36,20 @@ export default async function handler(req: any, res: any) {
   };
   // Try to append to Google Sheets if configured, otherwise save locally
   const sheetId = process.env.GOOGLE_SHEETS_ID;
-  const serviceAccount = process.env.GOOGLE_SERVICE_ACCOUNT; // JSON string
+  let serviceAccountRaw = process.env.GOOGLE_SERVICE_ACCOUNT; // JSON string
+  const serviceAccountB64 = process.env.GOOGLE_SERVICE_ACCOUNT_B64; // optional base64
 
-  if (sheetId && serviceAccount) {
+  if (!serviceAccountRaw && serviceAccountB64) {
     try {
-      const svc = JSON.parse(serviceAccount);
+      serviceAccountRaw = Buffer.from(serviceAccountB64, 'base64').toString('utf8');
+    } catch (e) {
+      serviceAccountRaw = undefined as any;
+    }
+  }
+
+  if (sheetId && serviceAccountRaw) {
+    try {
+      const svc = JSON.parse(serviceAccountRaw);
       let google;
       try {
         // dynamic require so local environments without googleapis won't crash until used
