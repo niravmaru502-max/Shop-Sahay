@@ -153,7 +153,7 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ lang, isDrawer = false }) => 
           {isDrawer && (
             <div className="text-center pt-2">
               <a
-                href={`https://wa.me/919876543210?text=${encodeURIComponent(t.whatsappMsg)}`}
+                href={`https://wa.me/919726704870?text=${encodeURIComponent(t.whatsappMsg)}`}
                 className="inline-flex items-center space-x-2 text-primary font-black text-[10px] uppercase tracking-widest hover:underline"
               >
                 <PhoneCall size={12} />

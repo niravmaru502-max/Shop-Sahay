@@ -92,7 +92,7 @@ const Contact: React.FC<ContactProps> = ({ lang }) => {
                 </div>
               </div>
               <a
-                href={`https://wa.me/919876543210?text=${encodeURIComponent(t.whatsappMsg)}`}
+                href={`https://wa.me/919726704870?text=${encodeURIComponent(t.whatsappMsg)}`}
                 className="block w-full bg-[#25D366] text-white py-5 rounded-2xl font-black text-center shadow-lg hover:scale-[1.02] transition-transform text-xs uppercase tracking-widest"
               >
                 Message us on WhatsApp
