@@ -1,0 +1,8 @@
+{
+  "name": "ShopSahay - Your Shop's Growth Partner",
+  "description": "A comprehensive business platform for shop owners in Gujarat, featuring AI-driven business advisory, digital transformation tools, and growth resources.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
