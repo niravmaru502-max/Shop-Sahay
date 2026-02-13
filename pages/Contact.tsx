@@ -34,13 +34,19 @@ const Contact: React.FC<ContactProps> = ({ lang }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    
-    // Simulate API processing
+
+    const fullMessage = `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nLocation: ${formData.location}\nMessage: ${formData.message}`;
+    const waLink = `https://wa.me/919726704870?text=${encodeURIComponent(fullMessage)}`;
+
+    // Open WhatsApp chat in a new tab/window with the filled details
+    window.open(waLink, '_blank');
+
+    // Mark submitted after a short delay to show confirmation in UI
     setTimeout(() => {
       setIsProcessing(false);
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 1500);
+    }, 700);
   };
 
   return (
