@@ -34,6 +34,56 @@ export default async function handler(req: any, res: any) {
     plan: plan || null,
     receivedAt: new Date().toISOString()
   };
+  // Try to append to Google Sheets if configured, otherwise save locally
+  const sheetId = process.env.GOOGLE_SHEETS_ID;
+  const serviceAccount = process.env.GOOGLE_SERVICE_ACCOUNT; // JSON string
+
+  if (sheetId && serviceAccount) {
+    try {
+      const svc = JSON.parse(serviceAccount);
+      let google;
+      try {
+        // dynamic require so local environments without googleapis won't crash until used
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        google = require('googleapis').google;
+      } catch (e) {
+        google = null;
+      }
+
+      if (google) {
+        const authClient = new google.auth.JWT(
+          svc.client_email,
+          undefined,
+          svc.private_key,
+          ['https://www.googleapis.com/auth/spreadsheets']
+        );
+        await authClient.authorize();
+        const sheets = google.sheets({ version: 'v4', auth: authClient });
+
+        const values = [[
+          payload.receivedAt,
+          payload.name,
+          payload.email || '',
+          payload.phone,
+          payload.location || '',
+          payload.message || '',
+          payload.plan || ''
+        ]];
+
+        await sheets.spreadsheets.values.append({
+          spreadsheetId: sheetId,
+          range: 'Sheet1!A:G',
+          valueInputOption: 'RAW',
+          requestBody: { values }
+        });
+
+        return res.status(200).json({ ok: true, saved: 'sheets' });
+      }
+    } catch (err: any) {
+      console.error('Google Sheets append failed:', err);
+      // fall through to local save
+    }
+  }
 
   try {
     const dataDir = path.join(process.cwd(), 'data');
@@ -51,7 +101,7 @@ export default async function handler(req: any, res: any) {
     arr.push(payload);
     await fs.writeFile(file, JSON.stringify(arr, null, 2), 'utf8');
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true, saved: 'file' });
   } catch (err: any) {
     console.error('Error saving contact submission:', err);
     return res.status(500).json({ error: 'Failed to save submission' });
