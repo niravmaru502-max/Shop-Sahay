@@ -38,6 +38,24 @@ const Contact: React.FC<ContactProps> = ({ lang }) => {
     const fullMessage = `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nLocation: ${formData.location}\nMessage: ${formData.message}`;
     const waLink = `https://wa.me/919726704870?text=${encodeURIComponent(fullMessage)}`;
 
+    // Send form data to server API (fire-and-forget)
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      location: formData.location,
+      message: formData.message,
+      plan: selectedPlan || null
+    };
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch((err) => {
+      console.error('Failed to POST contact:', err);
+    });
+
     // Open WhatsApp chat in a new tab/window with the filled details
     window.open(waLink, '_blank');
 
